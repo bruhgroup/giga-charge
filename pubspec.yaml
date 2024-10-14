@@ -1,3 +1,4 @@
+
 name: gigacharge
 description: "A new Flutter project."
 
@@ -14,6 +15,9 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  flutter_map: ^7.0.2
+  flutter_map_cancellable_tile_provider: ^3.0.2
+  latlong2: ^0.9.1
 
 dev_dependencies:
   flutter_test:
@@ -30,3 +34,4 @@ flutter:
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+    - assets/images/car.png

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'settings/settings_dialog.dart';
-
+import 'map/marker_map.dart';
 
 class GigaSwapApp extends StatelessWidget {
   const GigaSwapApp({super.key});
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
               // Open settings drawer or modal
               showModalBottomSheet(
                 context: context,
-                builder: (context) => SettingsDialog(),
+                builder: (context) => const SettingsDialog(),
               );
             },
           ),
@@ -60,10 +60,19 @@ class _HomePageState extends State<HomePage> {
                   strokeWidth: 10,
                   color: Colors.green,
                 ),
-                Image.asset(
-                  'assets/car.png', // Placeholder for car image
+                // Image.asset(
+                //   'assets/images/car.png', // Placeholder for car image
+                //   height: 100,
+                //   width: 100,
+                // ),
+                //does this work lmao :fire:
+                SizedBox(
                   height: 100,
                   width: 100,
+                  child: Image.asset(
+                    'assets/images/car.png', // Placeholder for car image
+                    fit: BoxFit.contain, // Ensures the image fits within the bounds
+                  ),
                 ),
               ],
             ),
@@ -75,17 +84,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 20),
             // Map location widget placeholder
-            Container(
-              width: 300,
-              height: 150,
-              color: Colors.grey[300],
-              child: const Center(
-                child: Text(
-                  'Map/Location',
-                  style: TextStyle(color: Colors.black54),
-                ),
-              ),
-            ),
+            const Expanded(child: MarkerMap()),
             const SizedBox(height: 20),
             // Swap Button
             ElevatedButton(
