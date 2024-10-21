@@ -29,7 +29,7 @@ class _MarkerMapState extends State<MarkerMap> {
   };
 
   late final customMarkers = <Marker>[
-    buildPin(const LatLng(51.51868093513547, -0.12835376940892318)),
+    buildPin(const LatLng(21.296940, -157.817108)),
     buildPin(const LatLng(53.33360293799854, -6.284001062079881)),
   ];
 
@@ -52,70 +52,12 @@ class _MarkerMapState extends State<MarkerMap> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Markers')),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox.square(
-                  dimension: 130,
-                  child: GridView.builder(
-                    gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 5,
-                      crossAxisSpacing: 5,
-                    ),
-                    itemCount: 9,
-                    itemBuilder: (_, index) {
-                      final deg = alignments.keys.elementAt(index);
-                      final align = alignments.values.elementAt(index);
-
-                      return IconButton.outlined(
-                        onPressed: () =>
-                            setState(() => selectedAlignment = align),
-                        icon: Transform.rotate(
-                          angle: deg == null ? 0 : deg * pi / 180,
-                          child: Icon(
-                            deg == null ? Icons.circle : Icons.arrow_upward,
-                            color: selectedAlignment == align
-                                ? Colors.green
-                                : null,
-                            size: deg == null ? 16 : null,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Tap the map to add markers!'),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Text('Counter-rotation'),
-                        const SizedBox(width: 10),
-                        Switch.adaptive(
-                          value: counterRotate,
-                          onChanged: (v) => setState(() => counterRotate = v),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
           Flexible(
             child: FlutterMap(
               options: MapOptions(
-                initialCenter: const LatLng(51.5, -0.09),
+                initialCenter: const LatLng(21.2998, -157.8148),
                 initialZoom: 5,
                 onTap: (_, p) => setState(() => customMarkers.add(buildPin(p))),
                 interactionOptions: const InteractionOptions(
@@ -128,7 +70,7 @@ class _MarkerMapState extends State<MarkerMap> {
                   rotate: counterRotate,
                   markers: const [
                     Marker(
-                      point: LatLng(47.18664724067855, -1.5436768515939427),
+                      point: LatLng(0.296940, -157.817108),
                       width: 64,
                       height: 64,
                       alignment: Alignment.centerLeft,
