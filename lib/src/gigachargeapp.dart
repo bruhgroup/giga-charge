@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'settings/settings_dialog.dart';
 import 'map/marker_map.dart';
+import 'chat/chat_ui.dart';
 
 class GigaSwapApp extends StatelessWidget {
   const GigaSwapApp({super.key});
@@ -109,12 +110,23 @@ class _HomePageState extends State<HomePage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
+            // IconButton(
+            //   icon: const Icon(Icons.message),
+            //   onPressed: () {
+            //     // Action for viewing messages
+            //   },
+            // ),
             IconButton(
               icon: const Icon(Icons.message),
               onPressed: () {
-                // Action for viewing messages
+                // Navigate to the ChatPage when the chat button is pressed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ChatPage()),
+                );
               },
             ),
+
             IconButton(
               icon: const Icon(Icons.qr_code_scanner),
               onPressed: () {
