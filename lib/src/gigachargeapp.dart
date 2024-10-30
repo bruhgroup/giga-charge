@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'settings/settings_dialog.dart';
+import 'qr_code_scanner/qr_scanner.dart';
 import 'map/marker_map.dart';
 import 'chat/chat_ui.dart';
 
@@ -72,7 +73,8 @@ class _HomePageState extends State<HomePage> {
                   width: 100,
                   child: Image.asset(
                     'assets/images/car.png', // Placeholder for car image
-                    fit: BoxFit.contain, // Ensures the image fits within the bounds
+                    fit: BoxFit
+                        .contain, // Ensures the image fits within the bounds
                   ),
                 ),
               ],
@@ -93,7 +95,8 @@ class _HomePageState extends State<HomePage> {
                 // Action for swapping
               },
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -130,7 +133,12 @@ class _HomePageState extends State<HomePage> {
             IconButton(
               icon: const Icon(Icons.qr_code_scanner),
               onPressed: () {
-                // Action for scanning QR code
+                // Navigate to the QR code scanner screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BarcodeScannerWithZoom()),
+                );
               },
             ),
           ],

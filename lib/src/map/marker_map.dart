@@ -34,20 +34,20 @@ class _MarkerMapState extends State<MarkerMap> {
   ];
 
   Marker buildPin(LatLng point) => Marker(
-    point: point,
-    width: 60,
-    height: 60,
-    child: GestureDetector(
-      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Tapped existing marker'),
-          duration: Duration(seconds: 1),
-          showCloseIcon: true,
+        point: point,
+        width: 60,
+        height: 60,
+        child: GestureDetector(
+          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Tapped existing marker'),
+              duration: Duration(seconds: 1),
+              showCloseIcon: true,
+            ),
+          ),
+          child: const Icon(Icons.location_pin, size: 60, color: Colors.black),
         ),
-      ),
-      child: const Icon(Icons.location_pin, size: 60, color: Colors.black),
-    ),
-  );
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -56,11 +56,10 @@ class _MarkerMapState extends State<MarkerMap> {
         children: [
           Flexible(
             child: FlutterMap(
-              options: MapOptions(
-                initialCenter: const LatLng(21.2998, -157.8148),
-                initialZoom: 5,
-                onTap: (_, p) => setState(() => customMarkers.add(buildPin(p))),
-                interactionOptions: const InteractionOptions(
+              options: const MapOptions(
+                initialCenter: LatLng(21.2998, -157.8148),
+                initialZoom: 10,
+                interactionOptions: InteractionOptions(
                   flags: ~InteractiveFlag.doubleTapZoom,
                 ),
               ),
