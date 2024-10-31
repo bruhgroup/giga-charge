@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'settings/settings_dialog.dart';
 import 'qr_code_scanner/qr_scanner.dart';
+import 'leaderboard/leaderboard.dart';
 import 'map/marker_map.dart';
 import 'chat/chat_ui.dart';
 
@@ -33,7 +34,10 @@ class _HomePageState extends State<HomePage> {
         leading: IconButton(
           icon: const Icon(Icons.leaderboard, color: Colors.black),
           onPressed: () {
-            // Action for leaderboard
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LeaderboardPage()),
+            );
           },
         ),
         actions: [
@@ -54,54 +58,60 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Glowing charging effect and car image
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                const CircularProgressIndicator(
-                  value: 0.7, // Simulating a charging effect
-                  strokeWidth: 10,
-                  color: Colors.green,
-                ),
-                // Image.asset(
-                //   'assets/images/car.png', // Placeholder for car image
-                //   height: 100,
-                //   width: 100,
-                // ),
-                //does this work lmao :fire:
-                SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: Image.asset(
-                    'assets/images/car.png', // Placeholder for car image
-                    fit: BoxFit
-                        .contain, // Ensures the image fits within the bounds
+            Container(
+              margin: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0), // Margin around this component
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const CircularProgressIndicator(
+                    value: 0.7, // Simulating a charging effect
+                    strokeWidth: 10,
+                    color: Colors.green,
                   ),
-                ),
-              ],
+                  SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: Image.asset(
+                      'assets/images/car.png', // Placeholder for car image
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 20),
             // Display GigaVolts
-            const Text(
-              '200 GigaVolts',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Container(
+              margin: const EdgeInsets.all(8.0), // Margin around this component
+              child: const Text(
+                '200 GigaVolts',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
             ),
-            const SizedBox(height: 20),
             // Map location widget placeholder
-            const Expanded(child: MarkerMap()),
-            const SizedBox(height: 20),
-            // Swap Button
-            ElevatedButton(
-              onPressed: () {
-                // Action for swapping
-              },
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(18.0), // Space around this component
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: const MarkerMap(),
                 ),
               ),
-              child: const Text('SWAP', style: TextStyle(fontSize: 18)),
+            ),
+            // Swap Button
+            Container(
+              margin: const EdgeInsets.all(8.0), // Margin around this component
+              child: ElevatedButton(
+                onPressed: () {
+                  // Action for swapping
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text('SWAP', style: TextStyle(fontSize: 18)),
+              ),
             ),
           ],
         ),
