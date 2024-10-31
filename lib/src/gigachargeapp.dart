@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'chat/chat_select.dart';
 import 'settings/settings_dialog.dart';
 import 'qr_code_scanner/qr_scanner.dart';
 import 'leaderboard/leaderboard.dart';
@@ -135,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                 // Navigate to the ChatPage when the chat button is pressed
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ChatPage()),
+                  MaterialPageRoute(builder: (context) => const RoomSelectionPage()),
                 );
               },
             ),

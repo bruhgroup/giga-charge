@@ -1,0 +1,302 @@
+[
+  {
+    "user_id": 1,
+    "first_name": "Giusto",
+    "last_name": "Ofield",
+    "points": 919
+  },
+  {
+    "user_id": 2,
+    "first_name": "Wilhelm",
+    "last_name": "Crate",
+    "points": 862
+  },
+  {
+    "user_id": 3,
+    "first_name": "Anjela",
+    "last_name": "Mingus",
+    "points": 421
+  },
+  {
+    "user_id": 4,
+    "first_name": "Zena",
+    "last_name": "Gypson",
+    "points": 597
+  },
+  {
+    "user_id": 5,
+    "first_name": "Toddie",
+    "last_name": "Benkhe",
+    "points": 263
+  },
+  {
+    "user_id": 6,
+    "first_name": "Yvonne",
+    "last_name": "Ibbett",
+    "points": 266
+  },
+  {
+    "user_id": 7,
+    "first_name": "Khalil",
+    "last_name": "Showers",
+    "points": 411
+  },
+  {
+    "user_id": 8,
+    "first_name": "Gwennie",
+    "last_name": "Pugsley",
+    "points": 693
+  },
+  {
+    "user_id": 9,
+    "first_name": "Pen",
+    "last_name": "Simmig",
+    "points": 47
+  },
+  {
+    "user_id": 10,
+    "first_name": "Jocko",
+    "last_name": "Lohering",
+    "points": 842
+  },
+  {
+    "user_id": 11,
+    "first_name": "Emlynn",
+    "last_name": "Burges",
+    "points": 786
+  },
+  {
+    "user_id": 12,
+    "first_name": "Rance",
+    "last_name": "Aldhous",
+    "points": 871
+  },
+  {
+    "user_id": 13,
+    "first_name": "Vernon",
+    "last_name": "Geach",
+    "points": 931
+  },
+  {
+    "user_id": 14,
+    "first_name": "Munmro",
+    "last_name": "Witard",
+    "points": 103
+  },
+  {
+    "user_id": 15,
+    "first_name": "Elmer",
+    "last_name": "Dekeyser",
+    "points": 700
+  },
+  {
+    "user_id": 16,
+    "first_name": "Nell",
+    "last_name": "Sexton",
+    "points": 856
+  },
+  {
+    "user_id": 17,
+    "first_name": "Joseph",
+    "last_name": "Lafferty",
+    "points": 311
+  },
+  {
+    "user_id": 18,
+    "first_name": "Adolphe",
+    "last_name": "Gettins",
+    "points": 381
+  },
+  {
+    "user_id": 19,
+    "first_name": "Amby",
+    "last_name": "Andrault",
+    "points": 90
+  },
+  {
+    "user_id": 20,
+    "first_name": "Tirrell",
+    "last_name": "Bumpass",
+    "points": 663
+  },
+  {
+    "user_id": 21,
+    "first_name": "Norton",
+    "last_name": "Pepin",
+    "points": 618
+  },
+  {
+    "user_id": 22,
+    "first_name": "Bryna",
+    "last_name": "Clarey",
+    "points": 736
+  },
+  {
+    "user_id": 23,
+    "first_name": "Margalit",
+    "last_name": "Kitteman",
+    "points": 703
+  },
+  {
+    "user_id": 24,
+    "first_name": "Dody",
+    "last_name": "Bidwell",
+    "points": 905
+  },
+  {
+    "user_id": 25,
+    "first_name": "Prisca",
+    "last_name": "Freire",
+    "points": 72
+  },
+  {
+    "user_id": 26,
+    "first_name": "Timothy",
+    "last_name": "Mazzeo",
+    "points": 23
+  },
+  {
+    "user_id": 27,
+    "first_name": "Estrella",
+    "last_name": "Mallall",
+    "points": 739
+  },
+  {
+    "user_id": 28,
+    "first_name": "Saunders",
+    "last_name": "Cavan",
+    "points": 722
+  },
+  {
+    "user_id": 29,
+    "first_name": "Baldwin",
+    "last_name": "Tupp",
+    "points": 454
+  },
+  {
+    "user_id": 30,
+    "first_name": "Steffane",
+    "last_name": "Bowich",
+    "points": 798
+  },
+  {
+    "user_id": 31,
+    "first_name": "Hinze",
+    "last_name": "Mattke",
+    "points": 119
+  },
+  {
+    "user_id": 32,
+    "first_name": "Marnie",
+    "last_name": "Welberry",
+    "points": 14
+  },
+  {
+    "user_id": 33,
+    "first_name": "Tova",
+    "last_name": "Dillingham",
+    "points": 147
+  },
+  {
+    "user_id": 34,
+    "first_name": "Cale",
+    "last_name": "Canham",
+    "points": 750
+  },
+  {
+    "user_id": 35,
+    "first_name": "Stephani",
+    "last_name": "Fall",
+    "points": 522
+  },
+  {
+    "user_id": 36,
+    "first_name": "Corbin",
+    "last_name": "Chrystie",
+    "points": 435
+  },
+  {
+    "user_id": 37,
+    "first_name": "Halimeda",
+    "last_name": "Dockree",
+    "points": 990
+  },
+  {
+    "user_id": 38,
+    "first_name": "Gregoire",
+    "last_name": "Rendbaek",
+    "points": 948
+  },
+  {
+    "user_id": 39,
+    "first_name": "Ibbie",
+    "last_name": "Cuskery",
+    "points": 242
+  },
+  {
+    "user_id": 40,
+    "first_name": "Coral",
+    "last_name": "Chieze",
+    "points": 612
+  },
+  {
+    "user_id": 41,
+    "first_name": "Cullan",
+    "last_name": "Petrie",
+    "points": 760
+  },
+  {
+    "user_id": 42,
+    "first_name": "Jeremiah",
+    "last_name": "Stormont",
+    "points": 366
+  },
+  {
+    "user_id": 43,
+    "first_name": "Vince",
+    "last_name": "Coltman",
+    "points": 43
+  },
+  {
+    "user_id": 44,
+    "first_name": "Roch",
+    "last_name": "Nind",
+    "points": 375
+  },
+  {
+    "user_id": 45,
+    "first_name": "Cole",
+    "last_name": "Titterell",
+    "points": 589
+  },
+  {
+    "user_id": 46,
+    "first_name": "Gunilla",
+    "last_name": "Cudd",
+    "points": 372
+  },
+  {
+    "user_id": 47,
+    "first_name": "Jilleen",
+    "last_name": "Pigot",
+    "points": 165
+  },
+  {
+    "user_id": 48,
+    "first_name": "Rosamund",
+    "last_name": "Forth",
+    "points": 151
+  },
+  {
+    "user_id": 49,
+    "first_name": "Natty",
+    "last_name": "Mendenhall",
+    "points": 553
+  },
+  {
+    "user_id": 50,
+    "first_name": "Kass",
+    "last_name": "Antonomoli",
+    "points": 111
+  }
+]

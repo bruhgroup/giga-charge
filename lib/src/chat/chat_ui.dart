@@ -11,24 +11,10 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
-void chatui() {
-  initializeDateFormatting().then((_) => runApp(const MyApp()));
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) => const MaterialApp(
-    home: Directionality(
-      textDirection: TextDirection.ltr,
-      child: ChatPage(),
-    ),
-  );
-}
-
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final Map<String, dynamic> user; // Add a parameter for the selected user
+
+  const ChatPage({super.key, required this.user});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -133,11 +119,11 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('Chat'),
+      title: Text('Chat with ${widget.user['first_name']}'), // Display selected user name
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
-          Navigator.pop(context); // Navigates back to the previous page (homepage)
+          Navigator.pop(context); // Navigates back to the previous page (room select)
         },
       ),
     ),
