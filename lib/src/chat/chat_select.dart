@@ -27,11 +27,11 @@ class _RoomSelectionPageState extends State<RoomSelectionPage> {
     });
   }
 
-  void _navigateToChat(Map<String, dynamic> user) {
+  void _navigateToChat(Map<String, dynamic> user, String index) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChatPage(user: user),
+        builder: (context) => ChatPage(user: user, roomId: index),
       ),
     );
   }
@@ -48,7 +48,7 @@ class _RoomSelectionPageState extends State<RoomSelectionPage> {
           final user = _users[index];
           return ListTile(
             title: Text('${user['first_name']} ${user['last_name']}'),
-            onTap: () => _navigateToChat(user),
+            onTap: () => _navigateToChat(user, index.toString()),
           );
         },
       ),

@@ -6,15 +6,15 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
-  final Map<String, dynamic> user; // Add a parameter for the selected user
+  final Map<String, dynamic> user;
+  final String roomId; // Unique identifier for each room
 
-  const ChatPage({super.key, required this.user});
+  const ChatPage({super.key, required this.user, required this.roomId});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -26,10 +26,8 @@ class _ChatPageState extends State<ChatPage> {
     id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
   );
 
-  // Initial dialogue options
   List<String> _currentDialogueOptions = ['Hello! Can we swap?', 'Sure!', 'No, I am busy now!'];
 
-  // Dialogue flow based on responses
   final Map<String, List<String>> _dialogueFlows = {
     'Hello! Can we swap?': ['Sure!', 'No, I am busy now!'],
     'Sure!': ['Give me 5 minutes', 'Give me 15 minutes', 'Give me 25 minutes'],
@@ -50,7 +48,48 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       _messages.insert(0, message);
     });
+    _saveMessages(); // Save messages after adding a new one
   }
+
+  Future<void> _saveMessages() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final path = '${directory.path}/messages_${widget.roomId}.json';
+    final file = File(path);
+
+    // Convert messages to JSON
+    final jsonMessages = _messages.map((msg) => msg.toJson()).toList();
+
+    // Write the messages to the file
+    await file.writeAsString(jsonEncode(jsonMessages));
+  }
+
+
+  Future<void> _loadMessages() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final path = '${directory.path}/messages_${widget.roomId}.json';
+    final file = File(path);
+
+    if (await file.exists()) {
+      final jsonString = await file.readAsString();
+      final jsonData = jsonDecode(jsonString) as List;
+
+      setState(() {
+        _messages = jsonData.map((msg) => types.TextMessage.fromJson(msg)).toList();
+      });
+    } else {
+      // Load initial messages from assets if no file exists
+      final response = await rootBundle.loadString('assets/messages.json');
+      final initialMessages = (jsonDecode(response) as List)
+          .map((e) => types.TextMessage.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      setState(() {
+        _messages = initialMessages;
+      });
+      await _saveMessages(); // Save initial messages to file
+    }
+  }
+
 
   void _handleMessageTap(BuildContext _, types.Message message) async {
     if (message is types.FileMessage) {
@@ -89,61 +128,6 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _handleSendMessage(String text) {
-    final textMessage = types.TextMessage(
-      author: _user,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: const Uuid().v4(),
-      text: text,
-    );
-
-    _addMessage(textMessage);
-
-    // Update the dialogue options based on the message sent
-    setState(() {
-      _currentDialogueOptions = _dialogueFlows[text] ?? [];
-    });
-  }
-
-  void _loadMessages() async {
-    final response = await rootBundle.loadString('assets/messages.json');
-    final messages = (jsonDecode(response) as List)
-        .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
-        .toList();
-
-    setState(() {
-      _messages = messages;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text('Chat with ${widget.user['first_name']}'), // Display selected user name
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.pop(context); // Navigates back to the previous page (room select)
-        },
-      ),
-    ),
-    body: Column(
-      children: [
-        Expanded(
-          child: Chat(
-            messages: _messages,
-            onMessageTap: _handleMessageTap,
-            user: _user,
-            showUserAvatars: true,
-            showUserNames: true,
-            onSendPressed: _handleSendPressed,
-          ),
-        ),
-        _buildDialogueOptions(), // Dialogue options at the bottom
-      ],
-    ),
-  );
-
   void _handleSendPressed(types.PartialText message) {
     final textMessage = types.TextMessage(
       author: _user,
@@ -160,6 +144,34 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text('Chat with ${widget.user['first_name']}'),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+    ),
+    body: Column(
+      children: [
+        Expanded(
+          child: Chat(
+            messages: _messages,
+            onMessageTap: _handleMessageTap,
+            user: _user,
+            showUserAvatars: true,
+            showUserNames: true,
+            onSendPressed: _handleSendPressed,
+          ),
+        ),
+        _buildDialogueOptions(),
+      ],
+    ),
+  );
+
   Widget _buildDialogueOptions() {
     return Container(
       padding: const EdgeInsets.all(8.0),
@@ -170,7 +182,7 @@ class _ChatPageState extends State<ChatPage> {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: ElevatedButton(
-              onPressed: () => _handleSendMessage(option),
+              onPressed: () => _handleSendPressed(types.PartialText(text: option)),
               child: Text(option),
             ),
           );
