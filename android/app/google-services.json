@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "940594068884",
+    "project_id": "giga-charga",
+    "storage_bucket": "giga-charga.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940594068884:android:9739debbb337f9d72e2381",
+        "android_client_info": {
+          "package_name": "com.gigacharge.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD1IKMM1R4pZcZmFIbPt4cnEaiBiXbSM4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
