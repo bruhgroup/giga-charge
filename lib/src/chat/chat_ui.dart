@@ -1,20 +1,15 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:http/http.dart' as http;
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+
 import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
-  final Map<String, dynamic> user;
-  final String roomId; // Unique identifier for each room
 
-  const ChatPage({super.key, required this.user, required this.roomId});
+  final types.Room room;
+  const ChatPage({super.key, required this.room});
+
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -44,88 +39,21 @@ class _ChatPageState extends State<ChatPage> {
     _loadMessages();
   }
 
-  void _addMessage(types.Message message) {
-    setState(() {
-      _messages.insert(0, message);
+  void _loadMessages() {
+    FirebaseChatCore.instance.messages(widget.room).listen((snapshot) {
+      setState(() {
+        _messages = snapshot;
+      });
     });
-    _saveMessages(); // Save messages after adding a new one
-  }
-
-  Future<void> _saveMessages() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final path = '${directory.path}/messages_${widget.roomId}.json';
-    final file = File(path);
-
-    // Convert messages to JSON
-    final jsonMessages = _messages.map((msg) => msg.toJson()).toList();
-
-    // Write the messages to the file
-    await file.writeAsString(jsonEncode(jsonMessages));
   }
 
 
-  Future<void> _loadMessages() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final path = '${directory.path}/messages_${widget.roomId}.json';
-    final file = File(path);
 
-    if (await file.exists()) {
-      final jsonString = await file.readAsString();
-      final jsonData = jsonDecode(jsonString) as List;
-
-      setState(() {
-        _messages = jsonData.map((msg) => types.TextMessage.fromJson(msg)).toList();
-      });
-    } else {
-      // Load initial messages from assets if no file exists
-      final response = await rootBundle.loadString('assets/messages.json');
-      final initialMessages = (jsonDecode(response) as List)
-          .map((e) => types.TextMessage.fromJson(e as Map<String, dynamic>))
-          .toList();
-
-      setState(() {
-        _messages = initialMessages;
-      });
-      await _saveMessages(); // Save initial messages to file
-    }
-  }
-
-
-  void _handleMessageTap(BuildContext _, types.Message message) async {
-    if (message is types.FileMessage) {
-      var localPath = message.uri;
-
-      if (message.uri.startsWith('http')) {
-        try {
-          final index = _messages.indexWhere((element) => element.id == message.id);
-          final updatedMessage = (_messages[index] as types.FileMessage).copyWith(isLoading: true);
-
-          setState(() {
-            _messages[index] = updatedMessage;
-          });
-
-          final client = http.Client();
-          final request = await client.get(Uri.parse(message.uri));
-          final bytes = request.bodyBytes;
-          final documentsDir = (await getApplicationDocumentsDirectory()).path;
-          localPath = '$documentsDir/${message.name}';
-
-          if (!File(localPath).existsSync()) {
-            final file = File(localPath);
-            await file.writeAsBytes(bytes);
-          }
-        } finally {
-          final index = _messages.indexWhere((element) => element.id == message.id);
-          final updatedMessage = (_messages[index] as types.FileMessage).copyWith(isLoading: null);
-
-          setState(() {
-            _messages[index] = updatedMessage;
-          });
-        }
-      }
-
-      await OpenFilex.open(localPath);
-    }
+  void _handleMessageTap(BuildContext _, types.Message message) {
+    FirebaseChatCore.instance.sendMessage(
+      message,
+      widget.room.id,
+    );
   }
 
   void _handleSendPressed(types.PartialText message) {
@@ -136,18 +64,19 @@ class _ChatPageState extends State<ChatPage> {
       text: message.text,
     );
 
-    _addMessage(textMessage);
+    FirebaseChatCore.instance.sendMessage(
+      textMessage,
+      widget.room.id,
+    );
 
-    // Update dialogue options based on the message sent
     setState(() {
       _currentDialogueOptions = _dialogueFlows[message.text] ?? [];
     });
   }
-
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text('Chat with ${widget.user['first_name']}'),
+      title: Text(widget.room.name ?? 'Chat Room'),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {

@@ -16,13 +16,15 @@ class _LoginPageState extends State<LoginPage> {
   bool _loggingIn = false;
   TextEditingController? _passwordController;
   TextEditingController? _usernameController;
+  TextEditingController? _emailController;
 
   @override
   void initState() {
     super.initState();
     _focusNode = FocusNode();
-    _passwordController = TextEditingController(text: 'Qawsed1-');
+    _passwordController = TextEditingController(text: '');
     _usernameController = TextEditingController(text: '');
+    _emailController = TextEditingController(text: '');
   }
 
   void _login() async {
@@ -34,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _usernameController!.text,
+        email: _emailController!.text,
         password: _passwordController!.text,
       );
       if (!mounted) return;
@@ -69,6 +71,7 @@ class _LoginPageState extends State<LoginPage> {
     _focusNode?.dispose();
     _passwordController?.dispose();
     _usernameController?.dispose();
+    _emailController?.dispose();
     super.dispose();
   }
 
@@ -87,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                   autocorrect: false,
                   autofillHints: _loggingIn ? null : [AutofillHints.email],
                   autofocus: true,
-                  controller: _usernameController,
+                  controller: _emailController,
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(

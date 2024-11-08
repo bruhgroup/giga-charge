@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../auth/login.dart';
 
 class SettingsDialog extends StatelessWidget {
   const SettingsDialog({super.key});
@@ -11,9 +14,33 @@ class SettingsDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            title: const Text('Edit Profile'),
-            onTap: () {
-              // Action for editing profile
+            title: const Text('Log out'),
+            onTap: () async {
+              try {
+                await FirebaseAuth.instance.signOut();
+                // Optionally navigate the user to the login page after signing out
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              } catch (e) {
+                // Handle any error during sign out, such as showing an error message
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Error'),
+                    content: Text(e.toString()),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
+              }
             },
           ),
           ListTile(
