@@ -1,15 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
-
 import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
-
   final types.Room room;
-  const ChatPage({super.key, required this.room});
-
+  final types.User user;
+  const ChatPage({super.key, required this.room, required this.user});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -17,10 +16,6 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
-  final _user = const types.User(
-    id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
-  );
-
   List<String> _currentDialogueOptions = ['Hello! Can we swap?', 'Sure!', 'No, I am busy now!'];
 
   final Map<String, List<String>> _dialogueFlows = {
@@ -39,6 +34,7 @@ class _ChatPageState extends State<ChatPage> {
     _loadMessages();
   }
 
+  // Load messages and listen to real-time updates
   void _loadMessages() {
     FirebaseChatCore.instance.messages(widget.room).listen((snapshot) {
       setState(() {
@@ -47,32 +43,47 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-
-
+  // Handle tap on message
   void _handleMessageTap(BuildContext _, types.Message message) {
-    FirebaseChatCore.instance.sendMessage(
-      message,
-      widget.room.id,
-    );
+    FirebaseChatCore.instance.sendMessage(message, widget.room.id);
   }
 
-  void _handleSendPressed(types.PartialText message) {
+  // Handle message send
+  Future<void> _handleSendPressed(types.PartialText message) async {
     final textMessage = types.TextMessage(
-      author: _user,
+      author: widget.user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: const Uuid().v4(),
       text: message.text,
     );
 
-    FirebaseChatCore.instance.sendMessage(
-      textMessage,
-      widget.room.id,
-    );
+    // Optimistically add the message to the UI
+    setState(() {
+      _messages.insert(0, textMessage);
+    });
 
+    // Prepare the message map for Firestore
+    final messageMap = message.toJson();
+    messageMap.removeWhere((key, value) => key == 'author' || key == 'id');
+    messageMap['authorId'] = widget.user.id;
+    messageMap['createdAt'] = FieldValue.serverTimestamp();
+    messageMap['updatedAt'] = FieldValue.serverTimestamp();
+
+    // Add message to Firestore
+    try {
+      await FirebaseFirestore.instance
+          .collection('rooms/${widget.room.id}/messages')
+          .add(messageMap);
+    } catch (e) {
+      print("Error adding message: $e");
+    }
+
+    // Update the dialogue options based on the sent message
     setState(() {
       _currentDialogueOptions = _dialogueFlows[message.text] ?? [];
     });
   }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -87,13 +98,27 @@ class _ChatPageState extends State<ChatPage> {
     body: Column(
       children: [
         Expanded(
-          child: Chat(
-            messages: _messages,
-            onMessageTap: _handleMessageTap,
-            user: _user,
-            showUserAvatars: true,
-            showUserNames: true,
-            onSendPressed: _handleSendPressed,
+          child: StreamBuilder<List<types.Message>>(
+            stream: FirebaseChatCore.instance.messages(widget.room),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+
+              final messages = snapshot.data ?? [];
+              return Chat(
+                messages: messages,
+                onMessageTap: _handleMessageTap,
+                user: widget.user,
+                showUserAvatars: true,
+                showUserNames: true,
+                onSendPressed: _handleSendPressed,
+              );
+            },
           ),
         ),
         _buildDialogueOptions(),
@@ -101,6 +126,7 @@ class _ChatPageState extends State<ChatPage> {
     ),
   );
 
+  // Build dialogue options based on current flow
   Widget _buildDialogueOptions() {
     return Container(
       padding: const EdgeInsets.all(8.0),

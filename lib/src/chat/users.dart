@@ -7,7 +7,8 @@ import 'chat_ui.dart';
 import 'util.dart';
 
 class UsersPage extends StatelessWidget {
-  const UsersPage({super.key});
+  final types.User a;
+  const UsersPage({super.key, required this.a});
 
   Widget _buildAvatar(types.User user) {
     final color = getUserAvatarNameColor(user);
@@ -38,7 +39,8 @@ class UsersPage extends StatelessWidget {
     await navigator.push(
       MaterialPageRoute(
         builder: (context) => ChatPage(
-          room: room
+          room: room,
+          user: a,
         ),
       ),
     );

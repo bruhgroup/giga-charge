@@ -11,21 +11,29 @@ import 'util.dart';
 
 class RoomsPage extends StatefulWidget {
   final User user;
-  const RoomsPage({super.key, required this.user});
+  RoomsPage({super.key, required this.user});
 
   @override
   State<RoomsPage> createState() => _RoomsPageState();
 }
 
 class _RoomsPageState extends State<RoomsPage> {
-  bool _error = false;
+  late types.User a;
 
   @override
   void initState() {
     super.initState();
 
+    a = types.User(
+      id: widget.user.uid,  // UID from Firebase Authentication
+      firstName: widget.user.displayName?.split(' ').first,  // First name
+      lastName: widget.user.displayName!.split(' ').length > 1
+          ? widget.user.displayName?.split(' ').last
+          : null,  // Last name if available
+      imageUrl: widget.user.photoURL ?? 'https://i.pravatar.cc/300',  // Fallback image if null
+    );
   }
-
+  bool _error = false;
 
   Widget _buildAvatar(types.Room room) {
     var color = Colors.transparent;
@@ -78,7 +86,7 @@ class _RoomsPageState extends State<RoomsPage> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         fullscreenDialog: true,
-                        builder: (context) => const UsersPage(),
+                        builder: (context) => UsersPage(a: a,),
                       ),
                     );
                   },
@@ -118,6 +126,7 @@ class _RoomsPageState extends State<RoomsPage> {
                           MaterialPageRoute(
                             builder: (context) => ChatPage(
                               room: room,
+                              user: a
                             ),
                           ),
                         );
