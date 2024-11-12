@@ -8,6 +8,7 @@ import 'settings/settings_dialog.dart';
 import 'qr_code_scanner/qr_scanner.dart';
 import 'leaderboard/leaderboard.dart';
 import 'map/marker_map.dart';
+import 'swap/swapconfirmation.dart';
 import 'auth/login.dart';
 
 class GigaSwapApp extends StatelessWidget {
@@ -67,8 +68,8 @@ class _HomePageState extends State<HomePage> {
         final currentUser = FirebaseAuth.instance.currentUser!;
 
         return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.white,
+          backgroundColor: Colors.white,
+      appBar: AppBar(
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.leaderboard, color: Colors.black),
@@ -83,19 +84,21 @@ class _HomePageState extends State<HomePage> {
               IconButton(
                 icon: const Icon(Icons.menu, color: Colors.black),
                 onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) => const SettingsDialog(),
-                  );
-                },
-              ),
-            ],
+
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => const SettingsDialog(),
+              );
+            },
           ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(displayName),
+        ],
+      ),
+      body: Center(
+
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(displayName),
                 Container(
                   margin: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
                   child: Stack(
@@ -127,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(18.0),
+                    padding: const EdgeInsets.fromLTRB(18.0, 18.0,18.0,18.0),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20.0),
                       child: const MarkerMap(),
@@ -135,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(8.0),
+                  margin: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 18.0),
                   child: ElevatedButton(
                     onPressed: () {
                       FirebaseChatCore.instance.createRoom(types.User(
@@ -144,14 +147,20 @@ class _HomePageState extends State<HomePage> {
                         imageUrl: 'https://i.pravatar.cc/300',
                         lastName: 'Doe',
                       ));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text('SWAP', style: TextStyle(fontSize: 18)),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SwapConfirmationPage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white38,
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text('SWAP', style: TextStyle(fontSize: 18, color: Colors.black)),
                   ),
                 ),
               ],
