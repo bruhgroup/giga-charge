@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -49,7 +50,13 @@ class _RegisterPageState extends State<RegisterPage> {
           imageUrl: 'https://i.pravatar.cc/300?u=${_emailController!.text}',
         ),
       );
-
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(credential.user!.uid)
+          .set({
+        'displayName': _userNameController!.text,
+        'points': 0,
+      }, SetOptions(merge: true));
       if (!mounted) return;
       Navigator.of(context)
         ..pop()
