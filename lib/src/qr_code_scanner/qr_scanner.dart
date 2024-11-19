@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -20,6 +19,7 @@ class _BarcodeScannerWithZoomState extends State<BarcodeScannerWithZoom> {
   );
 
   double _zoomFactor = 0.0;
+  final TextEditingController _licensePlateController = TextEditingController();
 
   Widget _buildZoomScaleSlider() {
     return ValueListenableBuilder(
@@ -84,7 +84,7 @@ class _BarcodeScannerWithZoomState extends State<BarcodeScannerWithZoom> {
             alignment: Alignment.bottomCenter,
             child: Container(
               alignment: Alignment.bottomCenter,
-              height: 100,
+              height: 200, // Increased space to fit the text box
               color: Colors.black.withOpacity(0.4),
               child: Column(
                 children: [
@@ -105,6 +105,32 @@ class _BarcodeScannerWithZoomState extends State<BarcodeScannerWithZoom> {
                       AnalyzeImageFromGalleryButton(controller: controller),
                     ],
                   ),
+                  // License Plate TextField
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: _licensePlateController,
+                      decoration: InputDecoration(
+                        labelText: 'Enter License Plate',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      keyboardType: TextInputType.text,
+                    ),
+                  ),
+                  // Display typed license plate (Optional)
+                  if (_licensePlateController.text.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        'License Plate: ${_licensePlateController.text}',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -118,5 +144,6 @@ class _BarcodeScannerWithZoomState extends State<BarcodeScannerWithZoom> {
   Future<void> dispose() async {
     super.dispose();
     await controller.dispose();
+    _licensePlateController.dispose(); // Clean up the text controller
   }
 }

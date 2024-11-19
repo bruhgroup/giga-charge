@@ -17,7 +17,6 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  List<types.Message> _messages = [];
   StreamSubscription? _messagesSubscription;
   List<String> _currentDialogueOptions = ['Hello! Can we swap?', 'Sure!', 'No, I am busy now!'];
 
@@ -109,7 +108,6 @@ class _ChatPageState extends State<ChatPage> {
               initialData: const [],
               stream: FirebaseChatCore.instance.messages(snapshot.data!),
               builder: (context, snapshot) {
-                print("Messages: ${snapshot.data}");
                 return Chat(
                   messages: snapshot.data ?? [],
                   onMessageTap: _handleMessageTap,
