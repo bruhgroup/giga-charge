@@ -27,9 +27,6 @@ class _RoomsPageState extends State<RoomsPage> {
     a = types.User(
       id: widget.user.uid,  // UID from Firebase Authentication
       firstName: widget.user.displayName?.split(' ').first,  // First name
-      lastName: widget.user.displayName!.split(' ').length > 1
-          ? widget.user.displayName?.split(' ').last
-          : null,  // Last name if available
       imageUrl: widget.user.photoURL ?? 'https://i.pravatar.cc/300',  // Fallback image if null
     );
   }

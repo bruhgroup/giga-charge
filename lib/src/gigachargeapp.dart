@@ -10,6 +10,7 @@ import 'leaderboard/leaderboard.dart';
 import 'map/marker_map.dart';
 import 'swap/swapconfirmation.dart';
 import 'auth/login.dart';
+import 'components/shining_progress_indicator.dart';
 
 class GigaSwapApp extends StatelessWidget {
   const GigaSwapApp({super.key});
@@ -74,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: const Color(0xff0061df),
+            backgroundColor: const Color(0xff3183ed),
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.leaderboard, color: Colors.black),
@@ -106,10 +107,9 @@ class _HomePageState extends State<HomePage> {
                 Container(
                     margin: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
                     child: Stack(alignment: Alignment.center, children: [
-                      const CircularProgressIndicator(
-                        value: 0.7,
-                        strokeWidth: 10,
+                      const ShiningProgressIndicator(
                         color: Colors.green,
+                        progress: 0.7,
                       ),
                       SizedBox(
                         height: 100,
@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           bottomNavigationBar: BottomAppBar(
-            color: const Color(0xff0061df),
+            color: const Color(0xff3183ed),
             shape: const CircularNotchedRectangle(),
             notchMargin: 0,
             child: Row(
@@ -152,6 +152,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 GestureDetector(
                   onTap: () {
+                    print(currentUser);
                     // Handle Message button tap
                     Navigator.push(
                       context,
