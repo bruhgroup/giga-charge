@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -41,7 +42,10 @@ class _HomePageState extends State<HomePage> {
       });
       return const Stream.empty();
     }
-    return FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots();
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .snapshots();
   }
 
   @override
@@ -64,19 +68,22 @@ class _HomePageState extends State<HomePage> {
         final userData = snapshot.data!.data()!;
         final displayName = userData['displayName'] ?? "Guest";
         final points = userData['points'] ?? 0;
-        final imageUrl = userData['imageUrl'] ?? 'https://png.pngtree.com/png-clipart/20210129/ourmid/pngtree-default-male-avatar-png-image_2811083.jpg';
+        final imageUrl = userData['imageUrl'] ??
+            'https://png.pngtree.com/png-clipart/20210129/ourmid/pngtree-default-male-avatar-png-image_2811083.jpg';
         final currentUser = FirebaseAuth.instance.currentUser!;
 
         return Scaffold(
           backgroundColor: Colors.white,
-      appBar: AppBar(
+          appBar: AppBar(
+            backgroundColor: const Color(0xff0061df),
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.leaderboard, color: Colors.black),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const LeaderboardPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const LeaderboardPage()),
                 );
               },
             ),
@@ -84,26 +91,22 @@ class _HomePageState extends State<HomePage> {
               IconButton(
                 icon: const Icon(Icons.menu, color: Colors.black),
                 onPressed: () {
-
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => const SettingsDialog(),
-              );
-            },
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => const SettingsDialog(),
+                  );
+                },
+              ),
+            ],
           ),
-        ],
-      ),
-      body: Center(
-
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(displayName),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(displayName, style: const TextStyle(fontSize: 20)),
                 Container(
-                  margin: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
+                    margin: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
+                    child: Stack(alignment: Alignment.center, children: [
                       const CircularProgressIndicator(
                         value: 0.7,
                         strokeWidth: 10,
@@ -115,84 +118,131 @@ class _HomePageState extends State<HomePage> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(100.0),
                           child: Image.network(
-                          imageUrl,
+                            imageUrl,
+                          ),
                         ),
                       ),
-                  ),]
-                  )
-                ),
+                    ])),
                 Container(
                   margin: const EdgeInsets.all(8.0),
                   child: Text(
                     '$points GigaVolts',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(18.0, 18.0,18.0,18.0),
+                    padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 52.0),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20.0),
                       child: const MarkerMap(),
                     ),
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 18.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      FirebaseChatCore.instance.createRoom(types.User(
-                        firstName: 'John',
-                        id: currentUser.uid,
-                        imageUrl: 'https://i.pravatar.cc/300',
-                        lastName: 'Doe',
-                      ));
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SwapConfirmationPage()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white38,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text('SWAP', style: TextStyle(fontSize: 18, color: Colors.black)),
-                  ),
-                ),
               ],
             ),
           ),
           bottomNavigationBar: BottomAppBar(
+            color: const Color(0xff0061df),
             shape: const CircularNotchedRectangle(),
-            notchMargin: 10,
+            notchMargin: 8,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisSize: MainAxisSize.max,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.message),
-                  onPressed: () {
+                GestureDetector(
+                  onTap: () {
+                    // Handle Message button tap
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => RoomsPage(user: currentUser)),
+                      MaterialPageRoute(
+                          builder: (context) => RoomsPage(user: currentUser)),
                     );
                   },
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 150, 0),
+                    // Hack to make it centered in the middl
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.message, size: 30, color: Colors.black),
+                        // Message Icon
+                        Text('Messages',
+                            style:
+                                TextStyle(fontSize: 12, color: Colors.black)),
+                        // Label
+                      ],
+                    ),
+                  ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.qr_code_scanner),
-                  onPressed: () {
+                GestureDetector(
+                  onTap: () {
+                    // Handle QR Code Scan button tap
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const BarcodeScannerWithZoom()),
+                      MaterialPageRoute(
+                          builder: (context) => const BarcodeScannerWithZoom()),
                     );
                   },
-                ),
+                  child: Container(
+                    // padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.qr_code_scanner,
+                            size: 30, color: Colors.black), // QR Code Icon
+                        Text('Scan QR',
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.black)), // Label
+                      ],
+                    ),
+                  ),
+                )
               ],
             ),
           ),
+          floatingActionButton: ElevatedButton(
+            onPressed: () {
+              // Handle Swap button tap
+              FirebaseChatCore.instance.createRoom(types.User(
+                firstName: 'John',
+                id: currentUser.uid,
+                imageUrl: 'https://i.pravatar.cc/300',
+                lastName: 'Doe',
+              ));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SwapConfirmationPage()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50), // Rounded corners
+              ),
+              elevation: 8,
+              // Shadow effect for the button
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              // Padding around the button
+              minimumSize: const Size(
+                  100, 60), // Size of the button (adjust to fit content)
+            ),
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.swap_horiz, size: 48, color: Colors.black),
+                // Swap Icon
+                Text('Swap',
+                    style: TextStyle(fontSize: 12, color: Colors.black)),
+                // Label
+              ],
+            ),
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
         );
       },
     );
