@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -135,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 52.0),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(25.0),
                       child: const MarkerMap(),
                     ),
                   ),
@@ -146,7 +145,7 @@ class _HomePageState extends State<HomePage> {
           bottomNavigationBar: BottomAppBar(
             color: const Color(0xff0061df),
             shape: const CircularNotchedRectangle(),
-            notchMargin: 8,
+            notchMargin: 0,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               mainAxisSize: MainAxisSize.max,
@@ -228,7 +227,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               // Padding around the button
               minimumSize: const Size(
-                  100, 60), // Size of the button (adjust to fit content)
+                  100, 100), // Size of the button (adjust to fit content)
             ),
             child: const Column(
               mainAxisSize: MainAxisSize.min,

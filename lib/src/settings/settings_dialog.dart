@@ -16,40 +16,68 @@ class SettingsDialog extends StatelessWidget {
           ListTile(
             title: const Text('Log out'),
             onTap: () async {
-              try {
-                await FirebaseAuth.instance.signOut();
-                // Optionally navigate the user to the login page after signing out
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                );
-              } catch (e) {
-                // Handle any error during sign out, such as showing an error message
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Error'),
-                    content: Text(e.toString()),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  ),
-                );
+              final shouldLogout = await _showLogoutConfirmationDialog(context);
+              if (shouldLogout == true) {
+                try {
+                  await FirebaseAuth.instance.signOut();
+                  // Navigate to the login page and clear the navigation stack
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                        (route) => false, // Remove all previous routes
+                  );
+                } catch (e) {
+                  // Show error dialog if logout fails
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Error'),
+                      content: Text(e.toString()),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
               }
             },
           ),
           ListTile(
             title: const Text('Settings Option 1'),
-            onTap: () {},
+            onTap: () {
+              // Implement other settings options
+            },
           ),
           ListTile(
             title: const Text('Settings Option 2'),
-            onTap: () {},
+            onTap: () {
+              // Implement other settings options
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Displays a confirmation dialog before logging out
+  Future<bool?> _showLogoutConfirmationDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm Logout'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false), // Cancel
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true), // Confirm
+            child: const Text('Log Out'),
           ),
         ],
       ),

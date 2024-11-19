@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gigacharge/src/gigachargeapp.dart';
 
 import 'register.dart';
 
@@ -40,7 +41,9 @@ class _LoginPageState extends State<LoginPage> {
         password: _passwordController!.text,
       );
       if (!mounted) return;
-      Navigator.of(context).pop();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const GigaSwapApp()), // Replace HomePage with your target page
+      );
     } catch (e) {
       setState(() {
         _loggingIn = false;
