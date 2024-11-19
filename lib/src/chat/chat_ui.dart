@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -16,6 +18,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
+  StreamSubscription? _messagesSubscription;
   List<String> _currentDialogueOptions = ['Hello! Can we swap?', 'Sure!', 'No, I am busy now!'];
 
   final Map<String, List<String>> _dialogueFlows = {
@@ -31,17 +34,18 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    _loadMessages();
+    // _loadMessages();
   }
 
-  // Load messages and listen to real-time updates
-  void _loadMessages() {
-    FirebaseChatCore.instance.messages(widget.room).listen((snapshot) {
-      setState(() {
-        _messages = snapshot;
-      });
-    });
-  }
+  // void _loadMessages() {
+  //   _messagesSubscription = FirebaseChatCore.instance.messages(widget.room).listen((snapshot) {
+  //     if (mounted) { // Check if the widget is still in the widget tree
+  //       setState(() {
+  //         _messages = snapshot;
+  //       });
+  //     }
+  //   });
+  // }
 
   // Handle tap on message
   void _handleMessageTap(BuildContext _, types.Message message) {
@@ -57,20 +61,14 @@ class _ChatPageState extends State<ChatPage> {
       text: message.text,
     );
 
-    // Optimistically add the message to the UI
-    setState(() {
-      _messages.insert(0, textMessage);
-    });
-
-    // Prepare the message map for Firestore
-    final messageMap = message.toJson();
-    messageMap.removeWhere((key, value) => key == 'author' || key == 'id');
-    messageMap['authorId'] = widget.user.id;
-    messageMap['createdAt'] = FieldValue.serverTimestamp();
-    messageMap['updatedAt'] = FieldValue.serverTimestamp();
-
-    // Add message to Firestore
+    // Optimistically add the message to the Firestore collection
     try {
+      final messageMap = textMessage.toJson();
+      messageMap.removeWhere((key, value) => key == 'author' || key == 'id');
+      messageMap['authorId'] = widget.user.id;
+      messageMap['createdAt'] = FieldValue.serverTimestamp();
+      messageMap['updatedAt'] = FieldValue.serverTimestamp();
+
       await FirebaseFirestore.instance
           .collection('rooms/${widget.room.id}/messages')
           .add(messageMap);
@@ -82,6 +80,12 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       _currentDialogueOptions = _dialogueFlows[message.text] ?? [];
     });
+  }
+
+  @override
+  void dispose() {
+    _messagesSubscription?.cancel(); // Cancel the stream subscription
+    super.dispose();
   }
 
   @override
@@ -98,27 +102,24 @@ class _ChatPageState extends State<ChatPage> {
     body: Column(
       children: [
         Expanded(
-          child: StreamBuilder<List<types.Message>>(
-            stream: FirebaseChatCore.instance.messages(widget.room),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-
-              final messages = snapshot.data ?? [];
-              return Chat(
-                messages: messages,
-                onMessageTap: _handleMessageTap,
-                user: widget.user,
-                showUserAvatars: true,
-                showUserNames: true,
-                onSendPressed: _handleSendPressed,
-              );
-            },
+          child: StreamBuilder<types.Room>(
+            initialData: widget.room,
+            stream: FirebaseChatCore.instance.room(widget.room.id),
+            builder: (context, snapshot) => StreamBuilder<List<types.Message>>(
+              initialData: const [],
+              stream: FirebaseChatCore.instance.messages(snapshot.data!),
+              builder: (context, snapshot) {
+                print("Messages: ${snapshot.data}");
+                return Chat(
+                  messages: snapshot.data ?? [],
+                  onMessageTap: _handleMessageTap,
+                  user: widget.user,
+                  showUserAvatars: true,
+                  showUserNames: true,
+                  onSendPressed: _handleSendPressed,
+                );
+              },
+            )
           ),
         ),
         _buildDialogueOptions(),

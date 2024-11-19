@@ -12,35 +12,35 @@ class SwapConfirmationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Swap Confirmation"),
+        title: const Text("Swap Confirmation"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Swap Partner Information
             Text(
               "Ready to Swap with $swapPartnerName?",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // QR Code and OTP Section
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 children: [
-                  Text(
+                  const Text(
                     "Scan this QR Code or Enter OTP",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
                   // QR Code Display
                   QrImageView(
@@ -48,31 +48,31 @@ class SwapConfirmationPage extends StatelessWidget {
                     version: QrVersions.auto,
                     size: 200.0,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
                   // OTP Code Display
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         "Your OTP: ",
                         style: TextStyle(fontSize: 16),
                       ),
                       SelectableText(
                         otpCode,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.copy),
+                        icon: const Icon(Icons.copy),
                         onPressed: () {
                           // Copy OTP to clipboard
                           Clipboard.setData(ClipboardData(text: otpCode));
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("OTP copied to clipboard")),
+                            const SnackBar(content: Text("OTP copied to clipboard")),
                           );
                         },
                       ),
@@ -81,12 +81,12 @@ class SwapConfirmationPage extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             // Map Section
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(12),
@@ -107,7 +107,7 @@ class SwapConfirmationPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             // Confirm Button
             ElevatedButton(
@@ -116,19 +116,19 @@ class SwapConfirmationPage extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text("Swap Successful!"),
-                    content: Text("You've successfully swapped spots and earned 20 GigaVolts!"),
+                    title: const Text("Swap Successful!"),
+                    content: const Text("You've successfully swapped spots and earned 20 GigaVolts!"),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: Text("OK"),
+                        child: const Text("OK"),
                       ),
                     ],
                   ),
                 );
               },
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
+              child: const Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Text(
                   "Confirm Swap",
                   style: TextStyle(fontSize: 18),
