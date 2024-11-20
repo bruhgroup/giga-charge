@@ -5,7 +5,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 
 import 'chat_ui.dart';
-import '../auth/login.dart';
 import 'users.dart';
 import 'util.dart';
 
@@ -30,6 +29,7 @@ class _RoomsPageState extends State<RoomsPage> {
       imageUrl: widget.user.photoURL ?? 'https://i.pravatar.cc/300',  // Fallback image if null
     );
   }
+
   bool _error = false;
 
   Widget _buildAvatar(types.Room room) {
@@ -38,7 +38,7 @@ class _RoomsPageState extends State<RoomsPage> {
     if (room.type == types.RoomType.direct) {
       try {
         final otherUser = room.users.firstWhere(
-          (u) => u.id != widget.user.uid,
+              (u) => u.id != widget.user.uid,
         );
 
         color = getUserAvatarNameColor(otherUser);
@@ -58,9 +58,9 @@ class _RoomsPageState extends State<RoomsPage> {
         radius: 20,
         child: !hasImage
             ? Text(
-                name.isEmpty ? '' : name[0].toUpperCase(),
-                style: const TextStyle(color: Colors.white),
-              )
+          name.isEmpty ? '' : name[0].toUpperCase(),
+          style: const TextStyle(color: Colors.white),
+        )
             : null,
       ),
     );
@@ -77,16 +77,17 @@ class _RoomsPageState extends State<RoomsPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
+            // ignore: unnecessary_null_comparison
             onPressed: widget.user == null
                 ? null
                 : () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        fullscreenDialog: true,
-                        builder: (context) => UsersPage(a: a,),
-                      ),
-                    );
-                  },
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (context) => UsersPage(a: a),
+                ),
+              );
+            },
           ),
         ],
         leading: IconButton(
@@ -99,52 +100,59 @@ class _RoomsPageState extends State<RoomsPage> {
         title: const Text('Rooms'),
       ),
       body: StreamBuilder<List<types.Room>>(
-              stream: FirebaseChatCore.instance.rooms(),
-              initialData: const [],
-              builder: (context, snapshot) {
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Container(
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.only(
-                      bottom: 200,
-                    ),
-                    child: const Text('No rooms'),
-                  );
-                }
+        stream: FirebaseChatCore.instance.rooms(),
+        initialData: const [],
+        builder: (context, snapshot) {
+          // Check for loading state
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    final room = snapshot.data![index];
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.only(
+                bottom: 200,
+              ),
+              child: const Text('No rooms'),
+            );
+          }
 
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ChatPage(
-                              room: room,
-                              user: a
-                            ),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Row(
-                          children: [
-                            _buildAvatar(room),
-                            Text(room.name ?? ''),
-                          ],
-                        ),
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              final room = snapshot.data![index];
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ChatPage(
+                        room: room,
+                        user: a,
                       ),
-                    );
-                  },
-                );
-              },
-            ),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    children: [
+                      _buildAvatar(room),
+                      Text(room.name ?? ''),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

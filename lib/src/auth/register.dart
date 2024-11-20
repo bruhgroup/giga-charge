@@ -13,10 +13,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  String? _email;
-  String? _firstName;
   FocusNode? _focusNode;
-  String? _lastName;
   TextEditingController? _passwordController;
   bool _registering = false;
   TextEditingController? _emailController;
@@ -56,6 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
           .set({
         'displayName': _userNameController!.text,
         'points': 0,
+        'isCharging' : false,
       }, SetOptions(merge: true));
       if (!mounted) return;
       Navigator.of(context)

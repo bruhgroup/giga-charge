@@ -18,17 +18,6 @@ class _MarkerMapState extends State<MarkerMap> {
   bool counterRotate = false;
   LatLng? currentLocation; // Add this variable
 
-  static const alignments = {
-    315: Alignment.topLeft,
-    0: Alignment.topCenter,
-    45: Alignment.topRight,
-    270: Alignment.centerLeft,
-    null: Alignment.center,
-    90: Alignment.centerRight,
-    225: Alignment.bottomLeft,
-    180: Alignment.bottomCenter,
-    135: Alignment.bottomRight,
-  };
 
   @override
   void initState() {
