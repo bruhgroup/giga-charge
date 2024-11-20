@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:uuid/uuid.dart';
+
+import '../swap/swapconfirmation.dart';
 
 class ChatPage extends StatefulWidget {
   final types.Room room;
@@ -39,6 +42,13 @@ class _ChatPageState extends State<ChatPage> {
     _loadMessages();
   }
 
+  String _generateOTP() {
+    if (kDebugMode) return '123456';
+    final random = Uuid();
+    return random.v4().substring(0, 6); // Take the first 6 characters for a simple OTP
+  }
+
+
   // Load existing messages from Firestore
   void _loadMessages() {
     _messagesSubscription = FirebaseChatCore.instance.messages(widget.room).listen((messages) {
@@ -57,15 +67,37 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  // Handle message send
   Future<void> _handleSendPressed(types.PartialText message) async {
-    if (!_canSendMessage) return; // Block message sending if not allowed
+    if (!_canSendMessage) return;
+
+    String otp = ''; // Hold OTP if needed
+    String updatedMessage = message.text;
+
+    // Special handling for "Sure!"
+    if (message.text == 'Sure!') {
+      otp = _generateOTP();
+      updatedMessage = 'Sure! Your OTP is $otp #OTP click here to swap!';
+      setState(() {
+        _currentDialogueOptions = ['Send OTP: $otp', 'Cancel']; // Add Send/Cancel options
+      });
+    } else if (message.text.startsWith('Send OTP:')) {
+      // Handle sending the OTP (you can integrate with your backend or messaging API here)
+      print('Sending OTP: $otp');
+      setState(() {
+        _currentDialogueOptions = ['Thanks!'];
+      });
+    } else if (message.text == 'Cancel') {
+      setState(() {
+        _currentDialogueOptions = ['Sorry!'];
+      });
+      return; // Skip sending the Cancel message
+    }
 
     final textMessage = types.TextMessage(
       author: widget.user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: const Uuid().v4(),
-      text: message.text,
+      text: updatedMessage,
     );
 
     // Optimistically add the message to Firestore
@@ -80,16 +112,16 @@ class _ChatPageState extends State<ChatPage> {
           .collection('rooms/${widget.room.id}/messages')
           .add(messageMap);
 
-      // Update dialogue options and block further sending
       setState(() {
-        _lastSentMessage = message.text;
+        _lastSentMessage = updatedMessage;
         _currentDialogueOptions = _dialogueFlows[message.text] ?? [];
-        _canSendMessage = false; // Block sending until the other user responds
+        _canSendMessage = false;
       });
     } catch (e) {
       print("Error adding message: $e");
     }
   }
+
 
   @override
   void dispose() {
@@ -117,6 +149,16 @@ class _ChatPageState extends State<ChatPage> {
             builder: (context, snapshot) {
               return Chat(
                 messages: snapshot.data ?? [],
+                onMessageTap: (context, message) {
+                  if (message is types.TextMessage && message.text.contains('#OTP')) {
+                    // Navigate to Swap Confirmation Page
+                    print('Navigating to Swap Confirmation Page');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SwapConfirmationPage()),
+                    );
+                  }
+                },
                 onSendPressed: _handleSendPressed,
                 user: widget.user,
                 showUserAvatars: true,
