@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:uuid/uuid.dart';
+
+import '../swap/swapconfirmation.dart';
 
 class ChatPage extends StatefulWidget {
   final types.Room room;
@@ -18,7 +21,8 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   StreamSubscription? _messagesSubscription;
-  List<String> _currentDialogueOptions = ['Hello! Can we swap?', 'Sure!', 'No, I am busy now!'];
+  List<String> _currentDialogueOptions = ['Hello! Can we swap?', 'Ok thanks!'];
+  bool _canSendMessage = true; // Controls whether the user can send a message
 
   final Map<String, List<String>> _dialogueFlows = {
     'Hello! Can we swap?': ['Sure!', 'No, I am busy now!'],
@@ -30,37 +34,73 @@ class _ChatPageState extends State<ChatPage> {
     'Thanks!': [],
   };
 
+  String _lastSentMessage = '';
+
   @override
   void initState() {
     super.initState();
-    // _loadMessages();
+    _loadMessages();
   }
 
-  // void _loadMessages() {
-  //   _messagesSubscription = FirebaseChatCore.instance.messages(widget.room).listen((snapshot) {
-  //     if (mounted) { // Check if the widget is still in the widget tree
-  //       setState(() {
-  //         _messages = snapshot;
-  //       });
-  //     }
-  //   });
-  // }
-
-  // Handle tap on message
-  void _handleMessageTap(BuildContext _, types.Message message) {
-    FirebaseChatCore.instance.sendMessage(message, widget.room.id);
+  String _generateOTP() {
+    if (kDebugMode) return '123456';
+    final random = Uuid();
+    return random.v4().substring(0, 6); // Take the first 6 characters for a simple OTP
   }
 
-  // Handle message send
+
+  // Load existing messages from Firestore
+  void _loadMessages() {
+    _messagesSubscription = FirebaseChatCore.instance.messages(widget.room).listen((messages) {
+      if (messages.isNotEmpty) {
+        final lastMessage = messages.last;
+        if (lastMessage is types.TextMessage) {
+          // If the last message is from the other user, allow sending again
+          if (lastMessage.author.id != widget.user.id) {
+            setState(() {
+              _canSendMessage = true;
+              _currentDialogueOptions = _dialogueFlows[lastMessage.text] ?? [];
+            });
+          }
+        }
+      }
+    });
+  }
+
   Future<void> _handleSendPressed(types.PartialText message) async {
+    if (!_canSendMessage) return;
+
+    String otp = ''; // Hold OTP if needed
+    String updatedMessage = message.text;
+
+    // Special handling for "Sure!"
+    if (message.text == 'Sure!') {
+      otp = _generateOTP();
+      updatedMessage = 'Sure! Your OTP is $otp #OTP click here to swap!';
+      setState(() {
+        _currentDialogueOptions = ['Send OTP: $otp', 'Cancel']; // Add Send/Cancel options
+      });
+    } else if (message.text.startsWith('Send OTP:')) {
+      // Handle sending the OTP (you can integrate with your backend or messaging API here)
+      print('Sending OTP: $otp');
+      setState(() {
+        _currentDialogueOptions = ['Thanks!'];
+      });
+    } else if (message.text == 'Cancel') {
+      setState(() {
+        _currentDialogueOptions = ['Sorry!'];
+      });
+      return; // Skip sending the Cancel message
+    }
+
     final textMessage = types.TextMessage(
       author: widget.user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: const Uuid().v4(),
-      text: message.text,
+      text: updatedMessage,
     );
 
-    // Optimistically add the message to the Firestore collection
+    // Optimistically add the message to Firestore
     try {
       final messageMap = textMessage.toJson();
       messageMap.removeWhere((key, value) => key == 'author' || key == 'id');
@@ -71,19 +111,21 @@ class _ChatPageState extends State<ChatPage> {
       await FirebaseFirestore.instance
           .collection('rooms/${widget.room.id}/messages')
           .add(messageMap);
+
+      setState(() {
+        _lastSentMessage = updatedMessage;
+        _currentDialogueOptions = _dialogueFlows[message.text] ?? [];
+        _canSendMessage = false;
+      });
     } catch (e) {
       print("Error adding message: $e");
     }
-
-    // Update the dialogue options based on the sent message
-    setState(() {
-      _currentDialogueOptions = _dialogueFlows[message.text] ?? [];
-    });
   }
+
 
   @override
   void dispose() {
-    _messagesSubscription?.cancel(); // Cancel the stream subscription
+    _messagesSubscription?.cancel();
     super.dispose();
   }
 
@@ -101,23 +143,28 @@ class _ChatPageState extends State<ChatPage> {
     body: Column(
       children: [
         Expanded(
-          child: StreamBuilder<types.Room>(
-            initialData: widget.room,
-            stream: FirebaseChatCore.instance.room(widget.room.id),
-            builder: (context, snapshot) => StreamBuilder<List<types.Message>>(
-              initialData: const [],
-              stream: FirebaseChatCore.instance.messages(snapshot.data!),
-              builder: (context, snapshot) {
-                return Chat(
-                  messages: snapshot.data ?? [],
-                  onMessageTap: _handleMessageTap,
-                  user: widget.user,
-                  showUserAvatars: true,
-                  showUserNames: true,
-                  onSendPressed: _handleSendPressed,
-                );
-              },
-            )
+          child: StreamBuilder<List<types.Message>>(
+            initialData: const [],
+            stream: FirebaseChatCore.instance.messages(widget.room),
+            builder: (context, snapshot) {
+              return Chat(
+                messages: snapshot.data ?? [],
+                onMessageTap: (context, message) {
+                  if (message is types.TextMessage && message.text.contains('#OTP')) {
+                    // Navigate to Swap Confirmation Page
+                    print('Navigating to Swap Confirmation Page');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SwapConfirmationPage()),
+                    );
+                  }
+                },
+                onSendPressed: _handleSendPressed,
+                user: widget.user,
+                showUserAvatars: true,
+                showUserNames: true,
+              );
+            },
           ),
         ),
         _buildDialogueOptions(),
@@ -136,7 +183,9 @@ class _ChatPageState extends State<ChatPage> {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: ElevatedButton(
-              onPressed: () => _handleSendPressed(types.PartialText(text: option)),
+              onPressed: _canSendMessage
+                  ? () => _handleSendPressed(types.PartialText(text: option))
+                  : null, // Disable button if sending is blocked
               child: Text(option),
             ),
           );
