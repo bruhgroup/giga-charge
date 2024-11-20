@@ -18,7 +18,8 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   StreamSubscription? _messagesSubscription;
-  List<String> _currentDialogueOptions = ['Hello! Can we swap?', 'Sure!', 'No, I am busy now!'];
+  List<String> _currentDialogueOptions = ['Hello! Can we swap?', 'Ok thanks!'];
+  bool _canSendMessage = true; // Controls whether the user can send a message
 
   final Map<String, List<String>> _dialogueFlows = {
     'Hello! Can we swap?': ['Sure!', 'No, I am busy now!'],
@@ -30,29 +31,36 @@ class _ChatPageState extends State<ChatPage> {
     'Thanks!': [],
   };
 
+  String _lastSentMessage = '';
+
   @override
   void initState() {
     super.initState();
-    // _loadMessages();
+    _loadMessages();
   }
 
-  // void _loadMessages() {
-  //   _messagesSubscription = FirebaseChatCore.instance.messages(widget.room).listen((snapshot) {
-  //     if (mounted) { // Check if the widget is still in the widget tree
-  //       setState(() {
-  //         _messages = snapshot;
-  //       });
-  //     }
-  //   });
-  // }
-
-  // Handle tap on message
-  void _handleMessageTap(BuildContext _, types.Message message) {
-    FirebaseChatCore.instance.sendMessage(message, widget.room.id);
+  // Load existing messages from Firestore
+  void _loadMessages() {
+    _messagesSubscription = FirebaseChatCore.instance.messages(widget.room).listen((messages) {
+      if (messages.isNotEmpty) {
+        final lastMessage = messages.last;
+        if (lastMessage is types.TextMessage) {
+          // If the last message is from the other user, allow sending again
+          if (lastMessage.author.id != widget.user.id) {
+            setState(() {
+              _canSendMessage = true;
+              _currentDialogueOptions = _dialogueFlows[lastMessage.text] ?? [];
+            });
+          }
+        }
+      }
+    });
   }
 
   // Handle message send
   Future<void> _handleSendPressed(types.PartialText message) async {
+    if (!_canSendMessage) return; // Block message sending if not allowed
+
     final textMessage = types.TextMessage(
       author: widget.user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -60,7 +68,7 @@ class _ChatPageState extends State<ChatPage> {
       text: message.text,
     );
 
-    // Optimistically add the message to the Firestore collection
+    // Optimistically add the message to Firestore
     try {
       final messageMap = textMessage.toJson();
       messageMap.removeWhere((key, value) => key == 'author' || key == 'id');
@@ -71,19 +79,21 @@ class _ChatPageState extends State<ChatPage> {
       await FirebaseFirestore.instance
           .collection('rooms/${widget.room.id}/messages')
           .add(messageMap);
+
+      // Update dialogue options and block further sending
+      setState(() {
+        _lastSentMessage = message.text;
+        _currentDialogueOptions = _dialogueFlows[message.text] ?? [];
+        _canSendMessage = false; // Block sending until the other user responds
+      });
     } catch (e) {
       print("Error adding message: $e");
     }
-
-    // Update the dialogue options based on the sent message
-    setState(() {
-      _currentDialogueOptions = _dialogueFlows[message.text] ?? [];
-    });
   }
 
   @override
   void dispose() {
-    _messagesSubscription?.cancel(); // Cancel the stream subscription
+    _messagesSubscription?.cancel();
     super.dispose();
   }
 
@@ -101,23 +111,18 @@ class _ChatPageState extends State<ChatPage> {
     body: Column(
       children: [
         Expanded(
-          child: StreamBuilder<types.Room>(
-            initialData: widget.room,
-            stream: FirebaseChatCore.instance.room(widget.room.id),
-            builder: (context, snapshot) => StreamBuilder<List<types.Message>>(
-              initialData: const [],
-              stream: FirebaseChatCore.instance.messages(snapshot.data!),
-              builder: (context, snapshot) {
-                return Chat(
-                  messages: snapshot.data ?? [],
-                  onMessageTap: _handleMessageTap,
-                  user: widget.user,
-                  showUserAvatars: true,
-                  showUserNames: true,
-                  onSendPressed: _handleSendPressed,
-                );
-              },
-            )
+          child: StreamBuilder<List<types.Message>>(
+            initialData: const [],
+            stream: FirebaseChatCore.instance.messages(widget.room),
+            builder: (context, snapshot) {
+              return Chat(
+                messages: snapshot.data ?? [],
+                onSendPressed: _handleSendPressed,
+                user: widget.user,
+                showUserAvatars: true,
+                showUserNames: true,
+              );
+            },
           ),
         ),
         _buildDialogueOptions(),
@@ -136,7 +141,9 @@ class _ChatPageState extends State<ChatPage> {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: ElevatedButton(
-              onPressed: () => _handleSendPressed(types.PartialText(text: option)),
+              onPressed: _canSendMessage
+                  ? () => _handleSendPressed(types.PartialText(text: option))
+                  : null, // Disable button if sending is blocked
               child: Text(option),
             ),
           );
