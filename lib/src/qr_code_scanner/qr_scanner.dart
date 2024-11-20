@@ -1,25 +1,88 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import '../chat/chat_ui.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'scanned_barcode_label.dart';
 import 'scanner_button_widgets.dart';
 import 'scanner_error_widget.dart';
 
+
 class BarcodeScannerWithZoom extends StatefulWidget {
-  const BarcodeScannerWithZoom({super.key});
+  final User user;
+  const BarcodeScannerWithZoom({super.key, required this.user});
 
   @override
   State<BarcodeScannerWithZoom> createState() => _BarcodeScannerWithZoomState();
 }
 
 class _BarcodeScannerWithZoomState extends State<BarcodeScannerWithZoom> {
+  late types.User a;
+
+  @override
+  void initState() {
+    super.initState();
+
+    a = types.User(
+      id: widget.user.uid,  // UID from Firebase Authentication
+      firstName: widget.user.displayName?.split(' ').first,  // First name
+      imageUrl: widget.user.photoURL ?? 'https://i.pravatar.cc/300',  // Fallback image if null
+    );
+  }
+
   final MobileScannerController controller = MobileScannerController(
     torchEnabled: true,
   );
 
   double _zoomFactor = 0.0;
   final TextEditingController _licensePlateController = TextEditingController();
+
+  // Method to create new chat (or handle your specific functionality here)
+  Future<void> _createNewChat() async {
+    final licensePlate = _licensePlateController.text;
+    if (licensePlate.isNotEmpty) {
+      // Call the function to create the chat with the license plate
+      print('Creating new chat for License Plate: $licensePlate');
+      final navigator = Navigator.of(context);
+      // For debugging purposes, we will create a chat with a fixed user
+      final room = await FirebaseChatCore.instance.createRoom(const types.User(id: "BvZIv8zzUSb4dy7iDgoQbeFXddy2"));
+      await navigator.push(
+        MaterialPageRoute(
+          builder: (context) => ChatPage(
+            room: room,
+            user: a,
+          ),
+        ),
+      );
+      // Insert your chat creation logic here, for example, navigating to a new page
+    } else {
+      _showEmptyLicensePlateDialog();
+    }
+  }
+
+  // Method to show a dialog if license plate is empty
+  void _showEmptyLicensePlateDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Please enter a valid license plate'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Widget _buildZoomScaleSlider() {
     return ValueListenableBuilder(
@@ -105,21 +168,31 @@ class _BarcodeScannerWithZoomState extends State<BarcodeScannerWithZoom> {
                       AnalyzeImageFromGalleryButton(controller: controller),
                     ],
                   ),
-                  // License Plate TextField
+                  // License Plate TextField and Button
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: _licensePlateController,
-                      decoration: InputDecoration(
-                        labelText: 'Enter License Plate',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide.none,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _licensePlateController,
+                            decoration: InputDecoration(
+                              labelText: 'Enter License Plate',
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            keyboardType: TextInputType.text,
+                          ),
                         ),
-                      ),
-                      keyboardType: TextInputType.text,
+                        IconButton(
+                          icon: Icon(Icons.check, color: Colors.white),
+                          onPressed: _createNewChat, // Call _createNewChat when pressed
+                        ),
+                      ],
                     ),
                   ),
                   // Display typed license plate (Optional)
@@ -147,3 +220,4 @@ class _BarcodeScannerWithZoomState extends State<BarcodeScannerWithZoom> {
     _licensePlateController.dispose(); // Clean up the text controller
   }
 }
+
