@@ -81,6 +81,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
+          backgroundColor: const Color(0xff7fafff),
           systemOverlayStyle: SystemUiOverlayStyle.light,
           title: const Text('Login'),
         ),
