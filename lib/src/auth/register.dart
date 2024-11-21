@@ -132,7 +132,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 controller: _passwordController,
                 labelText: 'Password',
                 hintText: 'Enter your password',
-                obscureText: false,
+                obscureText: true,
               ),
               const SizedBox(height: 32),
               ElevatedButton(

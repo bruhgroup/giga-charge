@@ -13,153 +13,170 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  FocusNode? _focusNode;
   bool _loggingIn = false;
-  TextEditingController? _passwordController;
-  TextEditingController? _usernameController;
-  TextEditingController? _emailController;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode = FocusNode();
-    _passwordController = TextEditingController(text: '');
-    _usernameController = TextEditingController(text: '');
-    _emailController = TextEditingController(text: '');
-  }
+  bool _obscurePassword = true;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   void _login() async {
     FocusScope.of(context).unfocus();
-
-    setState(() {
-      _loggingIn = true;
-    });
+    setState(() => _loggingIn = true);
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController!.text,
-        password: _passwordController!.text,
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const GigaSwapApp()), // Replace HomePage with your target page
+        MaterialPageRoute(builder: (context) => const GigaSwapApp()),
       );
     } catch (e) {
-      setState(() {
-        _loggingIn = false;
-      });
-
-      await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-          content: Text(
-            e.toString(),
-          ),
-          title: const Text('Error'),
-        ),
-      );
+      setState(() => _loggingIn = false);
+      _showErrorDialog(e.toString());
     }
   }
 
-  @override
-  void dispose() {
-    _focusNode?.dispose();
-    _passwordController?.dispose();
-    _usernameController?.dispose();
-    _emailController?.dispose();
-    super.dispose();
+  void _showErrorDialog(String error) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(error),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color(0xff7fafff),
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-          title: const Text('Login'),
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.only(top: 80, left: 24, right: 24),
-            child: Column(
-              children: [
-                TextField(
-                  autocorrect: false,
-                  autofillHints: _loggingIn ? null : [AutofillHints.email],
-                  autofocus: true,
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(8),
-                      ),
-                    ),
-                    labelText: 'Email',
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.cancel),
-                      onPressed: () => _usernameController?.clear(),
-                    ),
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF2F7FF),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF2F7FF),
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        //title: const Text('Login'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Welcome Back!',
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Login to continue',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: const Color(0xff666666),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 40),
+              TextField(
+                controller: _emailController,
+                enabled: !_loggingIn,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelStyle: const TextStyle(color: Color(0xff5486ed)),
+                  labelText: 'Email Address',
+                  hintText: 'Enter your email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  onEditingComplete: () {
-                    _focusNode?.requestFocus();
-                  },
-                  readOnly: _loggingIn,
-                  textCapitalization: TextCapitalization.none,
-                  textInputAction: TextInputAction.next,
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xff5486ed)),
+                  ),
+                  //prefixIcon: const Icon(Icons.email),
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: TextField(
-                    autocorrect: false,
-                    autofillHints: _loggingIn ? null : [AutofillHints.password],
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8),
-                        ),
-                      ),
-                      labelText: 'Password',
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.cancel),
-                        onPressed: () => _passwordController?.clear(),
-                      ),
-                    ),
-                    focusNode: _focusNode,
-                    keyboardType: TextInputType.emailAddress,
-                    obscureText: true,
-                    onEditingComplete: _login,
-                    textCapitalization: TextCapitalization.none,
-                    textInputAction: TextInputAction.done,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _passwordController,
+                enabled: !_loggingIn,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelStyle: const TextStyle(color: Color(0xff5486ed)),
+                  labelText: 'Password',
+                  hintText: 'Enter your password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xff5486ed)),
+                  ),
+                  //prefixIcon: const Icon(Icons.lock),
+                  // suffixIcon: IconButton(
+                  //   icon: const Icon(Icons.visibility),
+                  //   onPressed: () {}, // Add toggle visibility logic here
+                  // ),
+                ),
+                obscureText: _obscurePassword, //set this to true if you want to have keyboard pop up or smth
+                textInputAction: TextInputAction.done,
+                onEditingComplete: _login,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _loggingIn ? null : _login,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff5486ed),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                TextButton(
-                  onPressed: _loggingIn ? null : _login,
-                  child: const Text('Login'),
+                child: _loggingIn
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                  'Login',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
-                TextButton(
-                  onPressed: _loggingIn
-                      ? null
-                      : () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterPage(),
-                            ),
-                          );
-                        },
-                  child: const Text('Register'),
+              ),
+              const SizedBox(height: 24),
+              TextButton(
+                onPressed: _loggingIn
+                    ? null
+                    : () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterPage(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Don\'t have an account? Register',
+                  style: TextStyle(
+                    color: Color(0xff5486ed),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
 }
