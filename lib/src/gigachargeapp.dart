@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: const Color(0xff3183ed),
+            backgroundColor: const Color(0xff7fafff),
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.leaderboard, color: Colors.black),
@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           bottomNavigationBar: BottomAppBar(
-            color: const Color(0xff3183ed),
+            color: const Color(0xff7fafff),
             shape: const CircularNotchedRectangle(),
             notchMargin: 0,
             child: Row(
@@ -223,9 +223,9 @@ class _HomePageState extends State<HomePage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(50), // Rounded corners
               ),
-              elevation: 8,
+              elevation: 12,
               // Shadow effect for the button
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
               // Padding around the button
               minimumSize: const Size(
                   100, 100), // Size of the button (adjust to fit content)

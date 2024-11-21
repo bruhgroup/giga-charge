@@ -74,6 +74,7 @@ class _RoomsPageState extends State<RoomsPage> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xff7fafff),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -91,7 +92,7 @@ class _RoomsPageState extends State<RoomsPage> {
           ),
         ],
         leading: IconButton(
-          icon: const Icon(Icons.logout),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
