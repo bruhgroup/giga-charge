@@ -47,7 +47,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       });
     } catch (e) {
       // Handle error
-      print('Error fetching data: $e');
+      // print('Error fetching data: $e');
       setState(() {
         isLoading = false;
       });
@@ -93,7 +93,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       backgroundColor: Colors.blueGrey,
                       child: Text('${index + 4}'),
                     ),
-                    title: Text('${user.displayName}'),
+                    title: Text(user.displayName),
                     subtitle: Text('${user.points} points'),
                   );
                 },

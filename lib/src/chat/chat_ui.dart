@@ -44,7 +44,7 @@ class _ChatPageState extends State<ChatPage> {
 
   String _generateOTP() {
     if (kDebugMode) return '123456';
-    final random = Uuid();
+    const random = Uuid();
     return random.v4().substring(0, 6); // Take the first 6 characters for a simple OTP
   }
 
@@ -82,7 +82,6 @@ class _ChatPageState extends State<ChatPage> {
       });
     } else if (message.text.startsWith('Send OTP:')) {
       // Handle sending the OTP (you can integrate with your backend or messaging API here)
-      print('Sending OTP: $otp');
       setState(() {
         _currentDialogueOptions = ['Thanks!'];
       });
@@ -118,7 +117,7 @@ class _ChatPageState extends State<ChatPage> {
         _canSendMessage = false;
       });
     } catch (e) {
-      print("Error adding message: $e");
+      // print("Error adding message: $e");
     }
   }
 
@@ -152,10 +151,9 @@ class _ChatPageState extends State<ChatPage> {
                 onMessageTap: (context, message) {
                   if (message is types.TextMessage && message.text.contains('#OTP')) {
                     // Navigate to Swap Confirmation Page
-                    print('Navigating to Swap Confirmation Page');
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SwapConfirmationPage()),
+                      MaterialPageRoute(builder: (context) => const SwapConfirmationPage()),
                     );
                   }
                 },

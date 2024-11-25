@@ -45,7 +45,7 @@ class _BarcodeScannerWithZoomState extends State<BarcodeScannerWithZoom> {
     final licensePlate = _licensePlateController.text;
     if (licensePlate.isNotEmpty) {
       // Call the function to create the chat with the license plate
-      print('Creating new chat for License Plate: $licensePlate');
+      // print('Creating new chat for License Plate: $licensePlate');
       final navigator = Navigator.of(context);
       // For debugging purposes, we will create a chat with a fixed user
       final room = await FirebaseChatCore.instance.createRoom(const types.User(id: "BvZIv8zzUSb4dy7iDgoQbeFXddy2"));
@@ -189,7 +189,7 @@ class _BarcodeScannerWithZoomState extends State<BarcodeScannerWithZoom> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.check, color: Colors.white),
+                          icon: const Icon(Icons.check, color: Colors.white),
                           onPressed: _createNewChat, // Call _createNewChat when pressed
                         ),
                       ],
@@ -201,7 +201,7 @@ class _BarcodeScannerWithZoomState extends State<BarcodeScannerWithZoom> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
                         'License Plate: ${_licensePlateController.text}',
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                 ],

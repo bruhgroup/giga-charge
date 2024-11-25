@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gigacharge/src/swap/swap_confirmation.dart';
 
 class SwapPage extends StatefulWidget {
-  const SwapPage({Key? key}) : super(key: key);
+  const SwapPage({super.key});
 
   @override
   _SwapPageState createState() => _SwapPageState();
@@ -16,15 +16,15 @@ class _SwapPageState extends State<SwapPage> {
   void _submitOTP() {
     if (_otp.length == 6) {
       // Here you can verify the OTP, for example, with Firebase or your own backend.
-      print('OTP Submitted: $_otp');
+      // print('OTP Submitted: $_otp');
       // After successful OTP, navigate to the Swap confirmation page
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => SwapConfirmationPage()),
+        MaterialPageRoute(builder: (context) => const SwapConfirmationPage()),
       );
     } else {
       // Handle invalid OTP (e.g., show a dialog or error message)
-      print('Invalid OTP');
+      // print('Invalid OTP');
     }
   }
 

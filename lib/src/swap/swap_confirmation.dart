@@ -3,12 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter/services.dart';
+import '../gigachargeapp.dart';
 import '../map/marker_map.dart';
 
 class SwapConfirmationPage extends StatelessWidget {
   final String swapPartnerName = "Joe's Car";
   final String otpCode = "123456"; // Example OTP code
-  final String mapLocationUrl = 'https://maps.example.com'; // Placeholder for map
+  final String mapLocationUrl = 'https://maps.example.com';
+
+  const SwapConfirmationPage({super.key}); // Placeholder for map
 
   @override
   Widget build(BuildContext context) {
@@ -133,10 +136,9 @@ class SwapConfirmationPage extends StatelessWidget {
                       actions: [
                         TextButton(
                           onPressed: () {
-                            Navigator.of(context)
-                                .pop(); // Close the dialog
-                            Navigator.of(context)
-                                .pop(); // Navigate back to the home screen
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) => const GigaSwapApp()),
+                            );
                           },
                           child: const Text("OK"),
                         ),

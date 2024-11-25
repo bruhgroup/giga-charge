@@ -31,7 +31,7 @@ class GigaSwapApp extends StatelessWidget {
           ),
         ),
         appBarTheme: const AppBarTheme(
-          color: const Color(0xff7fafff),
+          color: Color(0xff7fafff),
           elevation: 0,
           titleTextStyle: TextStyle(fontSize: 20, color: Colors.white),
         ),
@@ -170,7 +170,6 @@ class _HomePageState extends State<HomePage> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    print(currentUser);
                     // Handle Message button tap
                     Navigator.push(
                       context,
@@ -204,19 +203,16 @@ class _HomePageState extends State<HomePage> {
                           builder: (context) => BarcodeScannerWithZoom(user: currentUser)),
                     );
                   },
-                  child: Container(
-                    // padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.qr_code_scanner,
-                            size: 30, color: Colors.black), // QR Code Icon
-                        Text('Scan QR',
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.black)), // Label
-                      ],
-                    ),
+                  child: const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.qr_code_scanner,
+                          size: 30, color: Colors.black), // QR Code Icon
+                      Text('Scan QR',
+                          style: TextStyle(
+                              fontSize: 12, color: Colors.black)), // Label
+                    ],
                   ),
                 )
               ],

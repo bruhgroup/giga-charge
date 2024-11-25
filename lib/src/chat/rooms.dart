@@ -10,7 +10,7 @@ import 'util.dart';
 
 class RoomsPage extends StatefulWidget {
   final User user;
-  RoomsPage({super.key, required this.user});
+  const RoomsPage({super.key, required this.user});
 
   @override
   State<RoomsPage> createState() => _RoomsPageState();
@@ -30,7 +30,7 @@ class _RoomsPageState extends State<RoomsPage> {
     );
   }
 
-  bool _error = false;
+  final bool _error = false;
 
   Widget _buildAvatar(types.Room room) {
     var color = Colors.transparent;
@@ -105,7 +105,7 @@ class _RoomsPageState extends State<RoomsPage> {
         builder: (context, snapshot) {
           // Check for loading state
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
