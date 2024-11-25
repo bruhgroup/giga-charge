@@ -8,7 +8,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:uuid/uuid.dart';
 
-import '../swap/swapconfirmation.dart';
+import '../swap/swap_confirmation.dart';
 
 class ChatPage extends StatefulWidget {
   final types.Room room;

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gigacharge/src/swap/swapconfirmation.dart';
+import 'package:gigacharge/src/swap/swap_confirmation.dart';
 
 class SwapPage extends StatefulWidget {
   const SwapPage({Key? key}) : super(key: key);

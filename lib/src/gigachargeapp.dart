@@ -9,7 +9,6 @@ import 'settings/settings_dialog.dart';
 import 'qr_code_scanner/qr_scanner.dart';
 import 'leaderboard/leaderboard.dart';
 import 'map/marker_map.dart';
-import 'swap/swapconfirmation.dart';
 import 'auth/login.dart';
 import 'components/shining_progress_indicator.dart';
 

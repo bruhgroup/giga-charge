@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter/services.dart';
@@ -111,24 +113,44 @@ class SwapConfirmationPage extends StatelessWidget {
 
             // Confirm Button
             ElevatedButton(
-              onPressed: () {
-                // Handle confirm swap action
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text("Swap Successful!"),
-                    content: const Text("You've successfully swapped spots and earned 20 GigaVolts!"),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text("OK"),
-                      ),
-                    ],
-                  ),
-                );
+              onPressed: () async {
+                try {
+                  // Increment user points by 20 in Firestore
+                  FirebaseAuth auth = FirebaseAuth.instance;
+                  final userDoc = FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(auth.currentUser!.uid);
+                  await userDoc.update({
+                    'points': FieldValue.increment(20),
+                  });
+
+                  // Show success dialog
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Swap Successful!"),
+                      content: const Text("You've successfully swapped spots and earned 20 GigaVolts!"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pop(); // Close the dialog
+                            Navigator.of(context)
+                                .pop(); // Navigate back to the home screen
+                          },
+                          child: const Text("OK"),
+                        ),
+                      ],
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Error: ${e.toString()}")),
+                  );
+                }
               },
               child: const Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: 16),
                 child: Text(
                   "Confirm Swap",
                   style: TextStyle(fontSize: 18),
