@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:gigacharge/utils/tile_providers.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart'; // Add this import
+import 'package:geolocator/geolocator.dart';
 
 class MarkerMap extends StatefulWidget {
   static const String route = '/markers';
@@ -16,38 +18,47 @@ class MarkerMap extends StatefulWidget {
 class _MarkerMapState extends State<MarkerMap> {
   Alignment selectedAlignment = Alignment.topCenter;
   bool counterRotate = false;
-  LatLng? currentLocation; // Add this variable
-
+  LatLng? currentLocation;
+  late StreamSubscription<Position> positionStream;
 
   @override
   void initState() {
+    if (mounted) {
+      getCurrentLocation();
+    }
     super.initState();
-    getCurrentLocation();
+  }
+
+  @override
+  void dispose() {
+    positionStream.cancel();
+    super.dispose();
   }
 
   Future<void> getCurrentLocation() async {
     try {
-      // Request location permission
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
+      if (mounted) {
+        // Request location permission
+        LocationPermission permission = await Geolocator.checkPermission();
         if (permission == LocationPermission.denied) {
-          return;
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            return;
+          }
         }
-      }
-
-      // Get current position
-      Position position = await Geolocator.getCurrentPosition();
-      setState(() {
-        currentLocation = LatLng(position.latitude, position.longitude);
-      });
-
-      // Set up location updates
-      Geolocator.getPositionStream().listen((Position position) {
+        // Get current position
+        Position position = await Geolocator.getCurrentPosition();
         setState(() {
           currentLocation = LatLng(position.latitude, position.longitude);
         });
-      });
+
+        // Set up location updates
+        positionStream = Geolocator.getPositionStream().listen((Position position) {
+          setState(() {
+            currentLocation = LatLng(position.latitude, position.longitude);
+          });
+        });
+      }
     } catch (e) {
       print('Error getting location: $e');
     }
@@ -59,37 +70,37 @@ class _MarkerMapState extends State<MarkerMap> {
   ];
 
   Marker buildPin(LatLng point) => Marker(
-    point: point,
-    width: 60,
-    height: 60,
-    child: GestureDetector(
-      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Tapped existing marker'),
-          duration: Duration(seconds: 1),
-          showCloseIcon: true,
+        point: point,
+        width: 60,
+        height: 60,
+        child: GestureDetector(
+          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Tapped existing marker'),
+              duration: Duration(seconds: 1),
+              showCloseIcon: true,
+            ),
+          ),
+          child: const Icon(Icons.location_pin, size: 60, color: Colors.black),
         ),
-      ),
-      child: const Icon(Icons.location_pin, size: 60, color: Colors.black),
-    ),
-  );
+      );
 
   Marker buildCurrentLocationMarker(LatLng point) => Marker(
-    point: point,
-    width: 60,
-    height: 60,
-    child: Container(
-      decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.3),
-        shape: BoxShape.circle,
-      ),
-      child: const Icon(
-        Icons.my_location,
-        size: 30,
-        color: Colors.blue,
-      ),
-    ),
-  );
+        point: point,
+        width: 60,
+        height: 60,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.3),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.my_location,
+            size: 30,
+            color: Colors.blue,
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
