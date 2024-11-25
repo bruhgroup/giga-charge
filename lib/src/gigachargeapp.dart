@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:gigacharge/src/chat/rooms.dart';
+import 'package:gigacharge/src/swap/swap_page.dart';
 import 'settings/settings_dialog.dart';
 import 'qr_code_scanner/qr_scanner.dart';
 import 'leaderboard/leaderboard.dart';
@@ -233,7 +234,7 @@ class _HomePageState extends State<HomePage> {
               ));
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SwapConfirmationPage()),
+                MaterialPageRoute(builder: (context) => const SwapPage()),
               );
             },
             style: ElevatedButton.styleFrom(
