@@ -74,7 +74,6 @@ class _RoomsPageState extends State<RoomsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xff7fafff),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),

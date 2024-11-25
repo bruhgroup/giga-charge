@@ -18,7 +18,25 @@ class GigaSwapApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(scaffoldBackgroundColor: const Color(0xFFFFFFFF)),
+      theme: ThemeData(
+          scaffoldBackgroundColor: const Color(0xFFFFFFFF),
+        primaryColor: const Color(0xFFFFFFFF),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.black, backgroundColor: Colors.white, // Text color
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          color: const Color(0xff7fafff),
+          elevation: 0,
+          titleTextStyle: TextStyle(fontSize: 20, color: Colors.white),
+        ),
+      ),
+
       debugShowCheckedModeBanner: false,
       home: const HomePage(),
     );
@@ -76,7 +94,6 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: const Color(0xff7fafff),
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.leaderboard, color: Colors.black),

@@ -132,7 +132,7 @@ class _BarcodeScannerWithZoomState extends State<BarcodeScannerWithZoom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scan a QR code'), backgroundColor: const Color(0xff7fafff)),
+      appBar: AppBar(title: const Text('Scan a QR code')),
       backgroundColor: Colors.black,
       body: Stack(
         children: [

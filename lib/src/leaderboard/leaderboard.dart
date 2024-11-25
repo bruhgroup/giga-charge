@@ -61,7 +61,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xff7fafff),
         title: const Text('Leaderboard'),
       ),
       body: Column(
